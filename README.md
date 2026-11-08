@@ -1,32 +1,29 @@
-# My Money
+# My Money — local-only edition
 
-A private, responsive personal finance tracker in GBP.
+A minimalist money tracker with a username/password login and **no Firebase or backend**.
 
-## Features
-- Main, Use, Savings balances
-- Automatic income split (default: Main 50%, Use 30%, Savings 20%)
-- Spending categories: Food, Beauty, Toys, Transport, Other
-- JPY, HKD, CNY and GBP entries converted to GBP using a public exchange-rate API
-- Main transfer confirmation; no transfers out of Savings
-- Weekly spending summary and transaction history
-- Firebase email/password authentication using a username alias
+## What works
+- One-time username/password setup on each browser
+- Main, Use and Savings ledger balances (GBP)
+- Automatic income allocation: 50% Main, 30% Use, 20% Savings by default; adjustable Savings share
+- Food, Beauty, Toys, Transport and Other spending categories
+- Expense tracking in GBP, JPY, HKD and CNY, with live rates from open.er-api.com
+- Transfers from Main require confirmation; Savings transfers out are not offered
+- Weekly spending chart and transaction history
 
-## Setup (required before sign-in works)
-1. Create a Firebase project at https://console.firebase.google.com/ .
-2. Add a **Web app** and copy its public Firebase config values into `index.html`. Do not paste private keys.
-3. Under **Authentication > Sign-in method**, enable **Email/Password**. Do **not** enable public self-registration in the website.
-4. Under **Authentication > Users**, manually add **one user**. For a username `hayley`, enter `hayley@mymoney.invalid` as its email alias and choose a strong password **inside Firebase**, never in ChatGPT. The alias cannot receive password-reset emails. If you want password recovery, use a real email instead and adjust the login code accordingly.
-5. Copy the newly created user's **UID** into the `OWNER_UID` constant in `index.html`.
-6. Create a Firestore database. Copy the contents of `firestore.rules` into **Firestore > Rules**, replace `REPLACE_WITH_OWNER_UID` with the same UID, and **Publish**. Never use Firestore test-mode rules for a deployed site.
-7. Host the site on Firebase Hosting or another HTTPS static hosting service. A private GitHub repository is not itself a hosted website.
+## Start
+Open `index.html` through an HTTPS static website host (such as Netlify or Cloudflare Pages). This private GitHub repository is **not** a hosted website. Local testing also works with a simple localhost server.
 
-## Important limitations
-- This is a manual tracker, not a bank account.
-- The Savings lock and Main warning are **interface rules**, not bank controls. The current Firestore rules restrict access by account UID but do not enforce balance or transfer invariants on the server. A user with access to the authenticated browser could alter records; do not treat this as tamper-proof accounting.
-- A username alias under `mymoney.invalid` cannot receive recovery emails. Consider using a real email for a production account.
-- The current app performs balance updates and transaction-history writes separately; if a write fails, the records could diverge. This is a starter version, not production-grade financial software.
-- Rates come from open.er-api.com, not Google, and may differ from the rate charged by your bank.
-- Firebase project config is public by design; **never** commit passwords, service-account credentials, or secret API keys.
+On first visit, create a username and password. On later visits in **the same browser**, sign in with them.
 
-## Privacy
-Keep this GitHub repository private. Configure Firebase Authentication and Firestore security rules before using it with personal records.
+## IMPORTANT: Security and data limitations
+- This is a **local-only demonstration**, not a secure online account.
+- Username/password verification is local; it is **not server-side authentication**. Anyone who can access the browser's stored data can read or modify the financial records, bypass the lock, or delete them.
+- Financial data is stored **unencrypted in localStorage**. Do not use on a shared or untrusted device. Never store actual banking credentials here.
+- Clearing site data, switching browsers/devices or using private browsing may lose your records. **There is no cloud sync or backup** and no password recovery.
+- Savings is an interface-only vault, not an actual bank account or tamper-proof savings lock.
+- This version does not connect to bank accounts or move real money.
+- The exchange-rate service is third-party, not Google, and conversion is indicative.
+- For secure multi-device sync and account protection, a backend with authentication and access rules is required.
+
+The previous Firebase rules file is no longer used by this version.
